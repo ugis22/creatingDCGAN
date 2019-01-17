@@ -1,4 +1,4 @@
-def train_network(batch_size, epoch):
+def train_network(batch_size, epochs):
     """
     This function train the two neural network at the same time. Because the real data is used to train the discrimator to distingish
     real from fake data, indirectly is also training the generator to create better and better images.
@@ -38,7 +38,6 @@ def train_network(batch_size, epoch):
     #Create the optimizer for both the discriminator and the generator
     discriminator_optimizer = AdamOptimizer(learning_rate=0.0002, beta1=0.5, beta2=0.999).minimize(discriminator_loss_total)
     generator_optimizer = AdamOptimizer(learning_rate=0.0002, beta1=0.5, beta2=0.999).minimize(generator_loss)
-
     
     #Run TF session and initialize variables
     sess = tf.Session()
@@ -46,17 +45,70 @@ def train_network(batch_size, epoch):
     sess.run(tf.local_variables_initializer)
 
     #Save and restore variables and Checkpoints with Saver
-    save = Saver()
+    saver = Saver()
+    path_saved = saver.save(sess, "/tmp/model.checkpnt")
+    checkpnt = latest_checkpoint(".model/newimages")
+    saver.restore(sess, path_saved)
+    coordinator_threads = Coordinator()
+    #threads = ???
     
+    #Define some parameters
+    image_batch, sample_number = processing_data()
+    batch_number = int(sample_number/batch_size)
+    total_batch = 0
 
-    
-    
-    
-    
-    
-    
-    
-    
     #start training
-    for i in range(epoch):
+    #Run the training loop for determined epochs
+    for epoch in range(epochs):
+        #Run the samples in minibatches (number of batch was already predefined)
+        for minibatch in range(batch_number):
+            noise_training = np.random.uniform(-1.0, 1.0, size=[batch_size, initial_dimension]).astype(np.float32)
+            
+            #We established the number of iterations for the discriminator and generator. Because if the discriminator is not good
+            #enough, the generator will get away with no so good quality images, we will iterate more over the discriminator than the
+            #generator
+            iterations_discriminator = 4
+            iterations_generator = 1
+            
+            #We iterate n times with the discriminator
+            for n_iter in range(iterations_discriminator):
+                image_training = sess.run(image_batch)
+                
+                #Now the discriminator has to be updated. Inside the tf session, the graph is initialized, and the trainer and
+                #loss function has to be feeded. In this case, trainer will be feeded with noise, real image and training
+                _, discriminator_loss_total = sess.run([discriminator_optimizer, discriminator_loss_total], 
+                                                      feed_dict={random_data: noise_training,
+                                                                real_image: image_training,
+                                                                training: True})
+            #Iterate m times with generator
+            for m_iter in range(iterations_generator):
+                image_training = sess.run(image_batch)
+                
+                #Now the generator has to be updated. In this case, the trainer and loss function will be feeded with noise and 
+                #training only because generator will not see the real images
+                _, generator_loss_total = sess.run([generator_optimizer, generator_loss], 
+                                                      feed_dict={random_data: noise_training,training: True})
+            
+        #Now the checkpoints and the images has to be saved:
+        #Save every 500 the checkpoints
+        if epoch%500 == 0:
+            #If the directory where saving checkpoints does not exist, create it
+            if not os.path.exists('./model/newimages'):
+                os.makedirs('./model/newimages')
+            #Save checkpoints
+            saver.save(sess, './model/newimages' + '/' + str(epoch))
         
+        if epoch%50 == 0:
+            #If the directory where saving images does not exist, create it
+            if not os.path.exists('./newimages'):
+                os.makedirs('./newimages')
+                    
+            #Create a random vector to feed the generator
+            noise_sample = np.random.uniform(-1.0, 1.0, size=[batch_size, initial_dimension]).astype(np.float32)
+            #Pass those parameters to generate an image but this time in not training mode
+            test_image = sess.run(fake_image, feed_dict={random_data: noise_sample, training: False})
+            #Save the image created in the chosen directory
+            save_images(test_image, [16,16], './newimages'+ '/epoch' + str(epoch) + '.jpg')
+
+    coordinator.request_stop()
+    coordinator.join(threads)                     
