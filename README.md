@@ -1,3 +1,5 @@
+******** This is an ONGOING PROJECT ************
+
 # Deep Convolutional Generative adversarial network
 
 ## Introduction
