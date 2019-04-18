@@ -10,4 +10,5 @@ Briefly, GAN is composed of two neural networks: a convolutional network called 
 The aim of this project is to build a deep convolutional GAN that takes as an input images and generates similar new images. 
 
 ## How GAN works
-
+* Generator
+* Discriminator
