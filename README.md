@@ -1,4 +1,4 @@
-******** This is an ONGOING PROJECT ************
+******** 🚧🚧 UNDER CONSTRUCTION 🚧🚧 ************
 
 # Deep Convolutional Generative adversarial network
 
@@ -14,3 +14,5 @@ The aim of this project is to build a deep convolutional GAN that takes as an in
 ## How GAN works
 * Generator
 * Discriminator
+
+******** 🚧🚧 UNDER CONSTRUCTION 🚧🚧 ************
