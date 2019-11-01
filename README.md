@@ -15,4 +15,5 @@ The aim of this project is to build a deep convolutional GAN that takes as an in
 * Generator
 * Discriminator
 
+
 ******** 🚧🚧 UNDER CONSTRUCTION 🚧🚧 ************
