@@ -2,6 +2,7 @@
 
 # Deep Convolutional Generative adversarial network
 
+
 ## Introduction
 
 Generative Adversarial Networks (GAN) has been described in 2014 by Ian Goodfellow and other researchers belonging to the University of Montreal. The most interesting point about GAN is that they can learn how to mimic the distribution of certain data and through that, generate images, music, speechs, texts, and much more. 
